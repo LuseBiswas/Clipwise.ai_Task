@@ -1,3 +1,127 @@
-<h2>AI Generated Script</h2>
-<p>{{ ai_script }}</p>
-<a href="{% url 'home' %}">Go Back</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Script</title>
+    <style>
+        body {
+            background-color: #f9fafb;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 0 1rem;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+        .nav-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+        }
+        .nav-links a:hover {
+            color: #111827;
+        }
+        .content-container {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .content-container h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        .script-content {
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            white-space: pre-wrap;
+            color: #374151;
+            font-size: 1rem;
+            overflow-wrap: break-word;
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #1e40af;
+        }
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+        .btn-secondary:hover {
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <h1 class="nav-title">AI Script Generator</h1>
+                <div class="nav-links">
+                    <a href="{% url 'home' %}">Generate</a>
+                    <a href="{% url 'script_list' %}">History</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-container">
+        <h2>Generated Script</h2>
+        <div class="script-content">
+            <pre>{{ ai_script }}</pre>
+        </div>
+        <div class="buttons-container">
+            <a href="{% url 'home' %}" class="btn btn-primary">Generate Another</a>
+            <a href="{% url 'script_list' %}" class="btn btn-secondary">View History</a>
+        </div>
+    </div>
+</body>
+</html>

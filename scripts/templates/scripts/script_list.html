@@ -1,17 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Saved Scripts</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script History</title>
+    <style>
+        body {
+            background-color: #f9fafb;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 0 1rem;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+        .nav-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+        }
+        .nav-links a:hover {
+            color: #111827;
+        }
+        .nav-links a.active {
+            color: #1e40af;
+            border-bottom: 2px solid #3b82f6;
+        }
+        .content-container {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .content-container h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        .script-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .script-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .script-card:hover {
+            background-color: #f3f4f6;
+        }
+        .script-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        .script-meta {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        .script-content {
+            color: #374151;
+            margin-top: 8px;
+        }
+        .script-attachment {
+            font-size: 0.875rem;
+            color: #2563eb;
+            margin-top: 8px;
+        }
+        .empty-message {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Saved Scripts</h1>
-    <ul>
-        {% for script in scripts %}
-            <li><strong>{{ script.title }}</strong>: {{ script.content }}</li>
-        {% empty %}
-            <li>No scripts saved yet.</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'home' %}">Go Back</a>
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <h1 class="nav-title">AI Script Generator</h1>
+                <div class="nav-links">
+                    <a href="{% url 'home' %}">Generate</a>
+                    <a href="{% url 'script_list' %}" class="active">History</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-container">
+        <h2>Generated Scripts History</h2>
+        {% if scripts %}
+            <div class="script-list">
+                {% for script in scripts %}
+                    <div class="script-card">
+                        <h3 class="script-title">{{ script.title }}</h3>
+                        <p class="script-meta">Created: {{ script.created_at|date:"F j, Y, g:i a" }}</p>
+                        <div class="script-content">
+                            <p>{{ script.content|truncatewords:50 }}</p>
+                        </div>
+                        {% if script.file %}
+                            <p class="script-attachment">📎 Attached file: {{ script.file.name }}</p>
+                        {% endif %}
+                        {% if script.link %}
+                            <p class="script-attachment">🔗 Link: {{ script.link }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-message">No scripts generated yet.</p>
+        {% endif %}
+    </div>
 </body>
 </html>

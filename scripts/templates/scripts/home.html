@@ -1,26 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Script Generator</title>
-  </head>
-  <body>
-    <h1>AI Script Generator</h1>
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      <label>Title:</label>
-      <input type="text" name="title" required /><br />
+    <style>
+        body {
+            background-color: #f9fafb;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 0 1rem;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+        .nav-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+            color: #374151;
+        }
+        .nav-links a:hover {
+            color: #111827;
+        }
+        .nav-links a.active {
+            color: #1e40af;
+            border-bottom: 2px solid #3b82f6;
+        }
+        .form-container {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+        .file-input {
+            display: block;
+            width: 100%;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .file-input::-webkit-file-upload-button {
+            margin-right: 16px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background-color: #eff6ff;
+            color: #1e40af;
+            cursor: pointer;
+        }
+        .file-input::-webkit-file-upload-button:hover {
+            background-color: #dbeafe;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #2563eb;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .submit-btn:hover {
+            background-color: #1d4ed8;
+        }
+        .submit-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <h1 class="nav-title">AI Script Generator</h1>
+                <div class="nav-links">
+                    <a href="{% url 'home' %}" class="active">Generate</a>
+                    <a href="{% url 'script_list' %}">History</a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-      <label>Content:</label>
-      <textarea name="content" required></textarea><br />
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
 
-      <label>Upload a File:</label>
-      <input type="file" name="file" /><br />
+            <!-- Title Field -->
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" name="title" id="title" required>
+            </div>
 
-      <label>Enter a Link:</label>
-      <input type="url" name="link" placeholder="https://example.com" /><br />
+            <!-- Content Field -->
+            <div class="form-group">
+                <label for="content">Content</label>
+                <textarea name="content" id="content" rows="4" required placeholder="Enter your prompt or content here..."></textarea>
+            </div>
 
-      <button type="submit">Save Script</button>
-    </form>
-    <a href="{% url 'script_list' %}">View Saved Scripts</a>
-  </body>
+            <!-- File Upload -->
+            <div class="form-group">
+                <label for="file">Upload File (PDF or TXT)</label>
+                <input type="file" name="file" id="file" accept=".pdf,.txt" class="file-input">
+            </div>
+
+            <!-- Link Input -->
+            <div class="form-group">
+                <label for="link">External Link</label>
+                <input type="url" name="link" id="link" placeholder="https://example.com">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group">
+                <button type="submit" class="submit-btn">Generate Script</button>
+            </div>
+        </form>
+    </div>
+</body>
 </html>
