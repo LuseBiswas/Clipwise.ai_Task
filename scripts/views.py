@@ -1,11 +1,15 @@
 import json
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.core.paginator import Paginator
+from django.db.models import Q
 from .models import Script
 from .utils import generate_ai_script
 import PyPDF2 # type: ignore
 import requests # type: ignore
 from bs4 import BeautifulSoup # type: ignore
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 
 def index(request):
@@ -66,11 +70,15 @@ def extract_text_from_link(url):
 
 def home(request):
     if request.method == "POST":
-        title = request.POST.get("title")
-        content = request.POST.get("content")
+        content = request.POST.get("content", "")
+        language = request.POST.get("language", "en")
         uploaded_file = request.FILES.get("file")
         link = request.POST.get("link")
 
+        # Auto-generate title from content
+        title = content.split()[:5]
+        title = " ".join(title) + ("..." if len(content.split()) > 5 else "")
+        
         # Extract text from file
         if uploaded_file:
             extracted_text = extract_text_from_file(uploaded_file)
@@ -81,18 +89,75 @@ def home(request):
             link_text = extract_text_from_link(link)
             content += f"\n\nExtracted from Link:\n{link_text}"
 
-        # Generate AI Script
-        ai_script = generate_ai_script(content)
+        # Generate AI Script with language parameter
+        prompt = f"Generate a script in {dict(Script.LANGUAGE_CHOICES)[language]}:\n{content}"
+        ai_script = generate_ai_script(prompt)
 
-        # Save the script with AI-generated content
-        Script.objects.create(title=title, content=ai_script, file=uploaded_file, link=link)
-        
-        # Pass the generated AI script to the template
-        return render(request, "scripts/script_detail.html", {"ai_script": ai_script})
+        # Save the script
+        Script.objects.create(
+            title=title,
+            content=ai_script,
+            language=language,
+            file=uploaded_file,
+            link=link
+        )
 
+        return render(request, "scripts/script_detail.html", {
+            "ai_script": ai_script,
+            "language": language
+        })
 
     return render(request, "scripts/home.html")
 
 def script_list(request):
-    scripts = Script.objects.all().order_by("-created_at")  # Show latest scripts first
-    return render(request, "scripts/script_list.html", {"scripts": scripts})
+    search_query = request.GET.get('q', '')
+    
+    # Filter scripts based on search query
+    scripts = Script.objects.all()
+    if search_query:
+        scripts = scripts.filter(
+            Q(title__icontains=search_query) |
+            Q(content__icontains=search_query)
+        )
+
+    # Pagination
+    paginator = Paginator(scripts, 10)  # Show 10 scripts per page
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "scripts/script_list.html", {
+        "scripts": page_obj,
+        "search_query": search_query
+    })
+
+def export_script_txt(request, script_id):
+    script = Script.objects.get(pk=script_id)
+    response = HttpResponse(script.content, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="{script.title}.txt"'
+    return response
+
+def export_script_pdf(request, script_id):
+    script = Script.objects.get(pk=script_id)
+    
+    # Create PDF
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer)
+    
+    # Add content to PDF
+    y = 800  # Starting y position
+    for line in script.content.split('\n'):
+        if y < 50:  # Check if we need a new page
+            p.showPage()
+            y = 800
+        p.drawString(50, y, line)
+        y -= 15  # Move down for next line
+    
+    p.showPage()
+    p.save()
+    
+    # FileResponse
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{script.title}.pdf"'
+    
+    return response

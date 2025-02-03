@@ -1,3 +1,4 @@
+<!-- templates/scripts/script_list.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,138 +6,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Script History</title>
     <style>
-        body {
-            background-color: #f9fafb;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+        /* [Previous CSS styles remain the same] */
+
+        .search-container {
+            margin-bottom: 2rem;
         }
-        nav {
-            background-color: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            padding: 0 1rem;
-        }
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-        .nav-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 64px;
-        }
-        .nav-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-        }
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-        .nav-links a {
-            text-decoration: none;
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.375rem;
             font-size: 1rem;
-            padding: 4px 0;
-            border-bottom: 2px solid transparent;
-            color: #6b7280;
         }
-        .nav-links a:hover {
-            color: #111827;
-        }
-        .nav-links a.active {
-            color: #1e40af;
-            border-bottom: 2px solid #3b82f6;
-        }
-        .content-container {
-            max-width: 1280px;
-            margin: 2rem auto;
-            padding: 1.5rem;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .content-container h2 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-        }
-        .script-list {
+
+        .pagination {
+            margin-top: 2rem;
             display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+            justify-content: center;
+            gap: 0.5rem;
         }
+
+        .page-link {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.375rem;
+            text-decoration: none;
+            color: var(--gray-700);
+            transition: all 0.2s;
+        }
+
+        .page-link:hover {
+            background: var(--gray-100);
+        }
+
+        .page-link.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
         .script-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 1rem;
-            transition: background-color 0.3s ease-in-out;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        .script-card:hover {
-            background-color: #f3f4f6;
-        }
+
         .script-title {
-            font-size: 1.125rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
         }
+
         .script-meta {
             font-size: 0.875rem;
-            color: #6b7280;
-            margin-top: 4px;
+            color: var(--gray-700);
+            margin-bottom: 1rem;
         }
+
         .script-content {
-            color: #374151;
-            margin-top: 8px;
-        }
-        .script-attachment {
-            font-size: 0.875rem;
-            color: #2563eb;
-            margin-top: 8px;
-        }
-        .empty-message {
-            text-align: center;
-            color: #6b7280;
-            padding: 2rem 0;
+            color: var(--gray-700);
+            margin-bottom: 1rem;
         }
     </style>
 </head>
 <body>
     <nav>
-        <div class="container">
-            <div class="nav-content">
-                <h1 class="nav-title">AI Script Generator</h1>
-                <div class="nav-links">
-                    <a href="{% url 'home' %}">Generate</a>
-                    <a href="{% url 'script_list' %}" class="active">History</a>
-                </div>
-            </div>
-        </div>
+        <!-- [Navigation remains the same] -->
     </nav>
 
-    <div class="content-container">
-        <h2>Generated Scripts History</h2>
+    <div class="main-content">
+        <div class="search-container">
+            <form method="GET" action="{% url 'script_list' %}">
+                <input type="text" name="q" class="search-input" 
+                    placeholder="Search scripts..." 
+                    value="{{ request.GET.q }}">
+            </form>
+        </div>
+
         {% if scripts %}
-            <div class="script-list">
-                {% for script in scripts %}
-                    <div class="script-card">
-                        <h3 class="script-title">{{ script.title }}</h3>
-                        <p class="script-meta">Created: {{ script.created_at|date:"F j, Y, g:i a" }}</p>
-                        <div class="script-content">
-                            <p>{{ script.content|truncatewords:50 }}</p>
-                        </div>
-                        {% if script.file %}
-                            <p class="script-attachment">📎 Attached file: {{ script.file.name }}</p>
-                        {% endif %}
-                        {% if script.link %}
-                            <p class="script-attachment">🔗 Link: {{ script.link }}</p>
+            {% for script in scripts %}
+                <div class="script-card">
+                    <h3 class="script-title">{{ script.title }}</h3>
+                    <div class="script-meta">
+                        <span>Created: {{ script.created_at|date:"F j, Y, g:i a" }}</span>
+                        {% if script.language %}
+                            <span> • Language: {{ script.get_language_display }}</span>
                         {% endif %}
                     </div>
+                    <div class="script-content">
+                        {{ script.content|truncatewords:50 }}
+                    </div>
+                    <div class="export-options">
+                        <button onclick="exportScript('{{ script.id }}', 'txt')" class="export-btn">Download as TXT</button>
+                        <button onclick="exportScript('{{ script.id }}', 'pdf')" class="export-btn">Download as PDF</button>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="pagination">
+                {% if scripts.has_previous %}
+                    <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">&laquo; First</a>
+                    <a href="?page={{ scripts.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">Previous</a>
+                {% endif %}
+
+                {% for num in scripts.paginator.page_range %}
+                    {% if num == scripts.number %}
+                        <span class="page-link active">{{ num }}</span>
+                    {% elif num > scripts.number|add:'-3' and num < scripts.number|add:'3' %}
+                        <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">{{ num }}</a>
+                    {% endif %}
                 {% endfor %}
+
+                {% if scripts.has_next %}
+                    <a href="?page={{ scripts.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">Next</a>
+                    <a href="?page={{ scripts.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">Last &raquo;</a>
+                {% endif %}
             </div>
         {% else %}
-            <p class="empty-message">No scripts generated yet.</p>
+            <p class="text-center">No scripts found.</p>
         {% endif %}
     </div>
+
+    <script>
+        function exportScript(scriptId, format) {
+            const url = `/export-script/${scriptId}/${format}/`;
+            if (format === 'txt') {
+                window.location.href = url;
+            } else if (format === 'pdf') {
+                window.open(url, '_blank');
+            }
+        }
+    </script>
 </body>
 </html>

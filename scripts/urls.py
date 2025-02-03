@@ -4,5 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('scripts/', views.script_list, name='script_list'),
-    path('generate-script/', views.generate_script, name='generate_script'),
+    path('export-script/<int:script_id>/txt/', views.export_script_txt, name='export_script_txt'),
+    path('export-script/pdf/', views.export_script_pdf, name='export_script_pdf'),
+    path('export-script/<int:script_id>/pdf/', views.export_script_pdf, name='export_script_pdf'),
 ]
