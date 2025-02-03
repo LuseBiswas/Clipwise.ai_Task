@@ -132,6 +132,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DEEPSEEK_API_KEY = "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"
+DEEPSEEK_API_KEY = "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"
 SITE_URL = "http://127.0.0.1:8000/"  # Optional
 SITE_NAME = "Your Site Name"  # Optional
