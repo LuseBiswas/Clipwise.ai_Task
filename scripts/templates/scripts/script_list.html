@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Saved Scripts</title>
+</head>
+<body>
+    <h1>Saved Scripts</h1>
+    <ul>
+        {% for script in scripts %}
+            <li><strong>{{ script.title }}</strong>: {{ script.content }}</li>
+        {% empty %}
+            <li>No scripts saved yet.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'home' %}">Go Back</a>
+</body>
+</html>

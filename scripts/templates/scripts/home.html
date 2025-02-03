@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>AI Script Generator</title>
+</head>
+<body>
+    <h1>AI Script Generator</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label>Title:</label>
+        <input type="text" name="title" required><br>
+        <label>Content:</label>
+        <textarea name="content" required></textarea><br>
+        <button type="submit">Save Script</button>
+    </form>
+    <a href="{% url 'script_list' %}">View Saved Scripts</a>
+</body>
+</html>
