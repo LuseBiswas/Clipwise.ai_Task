@@ -12,8 +12,8 @@ from reportlab.pdfgen import canvas
 from io import BytesIO
 
 
-def index(request):
-    return render(request, 'index.html')
+# def index(request):
+#     return render(request, 'index.html')
 
 def generate_script(request):
     if request.method == 'POST':
