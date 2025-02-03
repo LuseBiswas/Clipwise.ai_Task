@@ -126,3 +126,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+XAI_API_KEY = "xai-BQKTr3HZIBvuYgZQuSlIUSdCNLtZyLhjD8yxHP14jikusQdGGf21TfHf0tGLfnhvfKnG3oVm1T1gwIIk"
