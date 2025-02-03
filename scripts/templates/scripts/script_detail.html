@@ -1,127 +1,137 @@
+<!-- templates/scripts/script_detail.html -->
+{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generated Script</title>
-    <style>
-        body {
-            background-color: #f9fafb;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        nav {
-            background-color: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            padding: 0 1rem;
-        }
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-        .nav-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 64px;
-        }
-        .nav-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-        }
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-        .nav-links a {
-            text-decoration: none;
-            font-size: 1rem;
-            padding: 4px 0;
-            border-bottom: 2px solid transparent;
-            color: #6b7280;
-        }
-        .nav-links a:hover {
-            color: #111827;
-        }
-        .content-container {
-            max-width: 1280px;
-            margin: 2rem auto;
-            padding: 1.5rem;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .content-container h2 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-        }
-        .script-content {
-            background-color: #f3f4f6;
-            border-radius: 8px;
-            padding: 1.5rem;
-            white-space: pre-wrap;
-            color: #374151;
-            font-size: 1rem;
-            overflow-wrap: break-word;
-        }
-        .buttons-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1.5rem;
-        }
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            font-weight: 500;
-            border-radius: 6px;
-            text-decoration: none;
-            transition: background-color 0.3s ease-in-out;
-        }
-        .btn-primary {
-            background-color: #2563eb;
-            color: white;
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #1e40af;
-        }
-        .btn-secondary {
-            background-color: white;
-            color: #374151;
-            border: 1px solid #e5e7eb;
-        }
-        .btn-secondary:hover {
-            background-color: #f3f4f6;
-        }
-    </style>
+    <title>Generated Script - AI Script Generator</title>
+    {% tailwind_css %}
 </head>
-<body>
-    <nav>
-        <div class="container">
-            <div class="nav-content">
-                <h1 class="nav-title">AI Script Generator</h1>
-                <div class="nav-links">
-                    <a href="{% url 'home' %}">Generate</a>
-                    <a href="{% url 'script_list' %}">History</a>
+<body class="bg-gray-50 min-h-screen">
+    {% include 'components/header.html' %}
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-3xl mx-auto">
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <!-- Header Section -->
+                <div class="border-b border-gray-200 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h1 class="text-xl font-semibold text-gray-900">Generated Script</h1>
+                        {% if script.language %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                {{ script.get_language_display }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Script Content -->
+                <div class="px-6 py-4">
+                    <div class="bg-gray-50 rounded-lg p-6 overflow-auto">
+                        <div class="prose prose-sm max-w-none">
+                            <div class="whitespace-pre-wrap break-words text-gray-700 font-mono text-sm">
+                                {{ ai_script }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                    <div class="flex flex-col sm:flex-row justify-between gap-4">
+                        <div class="flex gap-4">
+                            <button 
+                                onclick="copyToClipboard()"
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                            >
+                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                </svg>
+                                Copy to Clipboard
+                            </button>
+                            <button 
+                                onclick="exportScript('txt')"
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                            >
+                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download TXT
+                            </button>
+                            <button 
+                                onclick="exportScript('pdf')"
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                            >
+                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download PDF
+                            </button>
+                        </div>
+                        <div class="flex gap-4">
+                            <a 
+                                href="{% url 'home' %}" 
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                            >
+                                Generate Another
+                            </a>
+                            <a 
+                                href="{% url 'script_list' %}" 
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                            >
+                                View History
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </nav>
+    </main>
 
-    <div class="content-container">
-        <h2>Generated Script</h2>
-        <div class="script-content">
-            <pre>{{ ai_script }}</pre>
-        </div>
-        <div class="buttons-container">
-            <a href="{% url 'home' %}" class="btn btn-primary">Generate Another</a>
-            <a href="{% url 'script_list' %}" class="btn btn-secondary">View History</a>
-        </div>
-    </div>
+    <script>
+        function copyToClipboard() {
+            const scriptContent = document.querySelector('.whitespace-pre-wrap').textContent;
+            navigator.clipboard.writeText(scriptContent).then(() => {
+                // You could add a toast notification here
+                alert('Copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+
+        function exportScript(format) {
+            const content = document.querySelector('.whitespace-pre-wrap').textContent;
+            if (format === 'txt') {
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'script.txt';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } else if (format === 'pdf') {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = "{% url 'export_script_pdf' %}";
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                const contentInput = document.createElement('input');
+                contentInput.type = 'hidden';
+                contentInput.name = 'content';
+                contentInput.value = content;
+                
+                form.appendChild(csrfInput);
+                form.appendChild(contentInput);
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+            }
+        }
+    </script>
 </body>
 </html>
