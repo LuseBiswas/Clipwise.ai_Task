@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import Script
 import PyPDF2 # type: ignore
+import requests # type: ignore
+from bs4 import BeautifulSoup # type: ignore
 
 
 def extract_text_from_file(file):
@@ -9,23 +11,55 @@ def extract_text_from_file(file):
         return file.read().decode("utf-8")  # Read text file
     elif file.name.endswith(".pdf"):
         pdf_reader = PyPDF2.PdfReader(file)
-        text = ""
-        for page in pdf_reader.pages:
-            text += page.extract_text() + "\n"
+        text = "".join([page.extract_text() for page in pdf_reader.pages if page.extract_text()])
         return text
     return ""
+
+def extract_text_from_link(url):
+    """Fetch and extract meaningful text from a URL."""
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()  # Raise error for failed requests
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Wikipedia-specific: Extract article content
+        if "wikipedia.org" in url:
+            # Wikipedia articles have content inside the 'div#bodyContent' section
+            content_section = soup.find("div", {"id": "bodyContent"})
+            paragraphs = content_section.find_all("p")
+            extracted_content = "\n".join([p.text for p in paragraphs if p.text.strip()])  # Collect all paragraph texts
+            if not extracted_content:
+                extracted_content = "No article content found."
+        else:
+            # For non-Wikipedia pages, try extracting first few paragraphs
+            paragraphs = soup.find_all("p")
+            extracted_content = "\n".join([p.text for p in paragraphs if p.text.strip()][:3])  # Limit to first 3 paragraphs
+            if not extracted_content:
+                extracted_content = "No content extracted."
+
+        return f"Extracted from Link:\n{extracted_content}"
+    except Exception as e:
+        return f"Error fetching content from link: {e}"
+
 
 def home(request):
     if request.method == "POST":
         title = request.POST.get("title")
         content = request.POST.get("content")
         uploaded_file = request.FILES.get("file")
+        link = request.POST.get("link")
 
+        # Extract text from file
         if uploaded_file:
             extracted_text = extract_text_from_file(uploaded_file)
-            content += "\n\n" + extracted_text  # Append extracted text to user input
+            content += f"\n\nExtracted from File:\n{extracted_text}"
 
-        Script.objects.create(title=title, content=content, file=uploaded_file)
+        # Extract text from link
+        if link:
+            link_text = extract_text_from_link(link)
+            content += f"\n\nExtracted from Link:\n{link_text}"
+
+        Script.objects.create(title=title, content=content, file=uploaded_file, link=link)
         return redirect("script_list")
 
     return render(request, "scripts/home.html")

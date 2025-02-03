@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <title>AI Script Generator</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>AI Script Generator</h1>
     <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label>Title:</label>
-        <input type="text" name="title" required><br>
-    
-        <label>Content:</label>
-        <textarea name="content" required></textarea><br>
-    
-        <label>Upload a File:</label>
-        <input type="file" name="file"><br>
-    
-        <button type="submit">Save Script</button>
+      {% csrf_token %}
+      <label>Title:</label>
+      <input type="text" name="title" required /><br />
+
+      <label>Content:</label>
+      <textarea name="content" required></textarea><br />
+
+      <label>Upload a File:</label>
+      <input type="file" name="file" /><br />
+
+      <label>Enter a Link:</label>
+      <input type="url" name="link" placeholder="https://example.com" /><br />
+
+      <button type="submit">Save Script</button>
     </form>
     <a href="{% url 'script_list' %}">View Saved Scripts</a>
-</body>
+  </body>
 </html>
