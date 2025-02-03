@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Script
+from .utils import generate_ai_script
 import PyPDF2 # type: ignore
 import requests # type: ignore
 from bs4 import BeautifulSoup # type: ignore
@@ -59,8 +60,15 @@ def home(request):
             link_text = extract_text_from_link(link)
             content += f"\n\nExtracted from Link:\n{link_text}"
 
-        Script.objects.create(title=title, content=content, file=uploaded_file, link=link)
-        return redirect("script_list")
+        # Generate AI Script
+        ai_script = generate_ai_script(content)
+
+        # Save the script with AI-generated content
+        Script.objects.create(title=title, content=ai_script, file=uploaded_file, link=link)
+        
+        # Pass the generated AI script to the template
+        return render(request, "scripts/script_detail.html", {"ai_script": ai_script})
+
 
     return render(request, "scripts/home.html")
 
