@@ -1,0 +1,74 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Script Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold text-center mb-8">AI Video Script Generator</h1>
+
+    <!-- Form for Prompt Input -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <form id="prompt-form" method="POST">
+            {% csrf_token %}
+            <label for="prompt" class="block text-xl font-semibold mb-4">Enter your prompt:</label>
+            <textarea id="prompt" name="prompt" rows="4" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Enter your video script prompt here..."></textarea>
+            <button type="submit" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg">Generate Script</button>
+        </form>
+    </div>
+
+    <!-- Display AI Generated Script -->
+    <div id="ai-script-container" class="mt-8">
+        <h2 class="text-2xl font-semibold mb-4">Generated Script:</h2>
+        <pre id="ai-script" class="bg-gray-100 p-4 rounded-lg text-gray-800 whitespace-pre-wrap"></pre>
+    </div>
+</div>
+
+<!-- JavaScript for AJAX Request -->
+<script>
+    document.getElementById('prompt-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const prompt = document.getElementById('prompt').value;
+        const aiScriptContainer = document.getElementById('ai-script-container');
+        const aiScriptElement = document.getElementById('ai-script');
+
+        aiScriptElement.textContent = "Loading..."; // Show loading message
+
+        // Get the CSRF token from the cookie
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        try {
+            const response = await fetch("{% url 'generate_script' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken, // Add CSRF token to headers
+                },
+                body: JSON.stringify({
+                    prompt: prompt,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.script) {
+                aiScriptElement.textContent = data.script;
+                aiScriptContainer.style.display = 'block';
+            } else {
+                aiScriptElement.textContent = "Error generating script. Please try again.";
+            }
+        } catch (error) {
+            aiScriptElement.textContent = "An error occurred. Please try again.";
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,9 +1,30 @@
+import json
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from .models import Script
 from .utils import generate_ai_script
 import PyPDF2 # type: ignore
 import requests # type: ignore
 from bs4 import BeautifulSoup # type: ignore
+
+
+def index(request):
+    return render(request, 'index.html')
+
+def generate_script(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            prompt = data.get('prompt')
+
+            if prompt:
+                ai_script = generate_ai_script(prompt)
+                return JsonResponse({'script': ai_script})
+            else:
+                return JsonResponse({'error': 'Prompt is required.'}, status=400)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 
 def extract_text_from_file(file):
