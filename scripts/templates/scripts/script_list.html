@@ -1,134 +1,136 @@
 <!-- templates/scripts/script_list.html -->
+{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Script History</title>
-    <style>
-        /* [Previous CSS styles remain the same] */
-
-        .search-container {
-            margin-bottom: 2rem;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--gray-200);
-            border-radius: 0.375rem;
-            font-size: 1rem;
-        }
-
-        .pagination {
-            margin-top: 2rem;
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .page-link {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--gray-200);
-            border-radius: 0.375rem;
-            text-decoration: none;
-            color: var(--gray-700);
-            transition: all 0.2s;
-        }
-
-        .page-link:hover {
-            background: var(--gray-100);
-        }
-
-        .page-link.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .script-card {
-            padding: 1.5rem;
-            background: white;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .script-title {
-            font-size: 1.25rem;
-            color: var(--gray-800);
-            margin-bottom: 0.5rem;
-        }
-
-        .script-meta {
-            font-size: 0.875rem;
-            color: var(--gray-700);
-            margin-bottom: 1rem;
-        }
-
-        .script-content {
-            color: var(--gray-700);
-            margin-bottom: 1rem;
-        }
-    </style>
+    <title>Script History - AI Script Generator</title>
+    {% tailwind_css %}
 </head>
-<body>
-    <nav>
-        <!-- [Navigation remains the same] -->
-    </nav>
+<body class="bg-gray-50 min-h-screen">
+    {% include 'components/header.html' %}
 
-    <div class="main-content">
-        <div class="search-container">
-            <form method="GET" action="{% url 'script_list' %}">
-                <input type="text" name="q" class="search-input" 
-                    placeholder="Search scripts..." 
-                    value="{{ request.GET.q }}">
-            </form>
-        </div>
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-3xl mx-auto">
+            <!-- Search Bar -->
+            <div class="mb-8">
+                <form method="GET" action="{% url 'script_list' %}" class="relative">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 pl-10"
+                        placeholder="Search scripts..." 
+                        value="{{ request.GET.q }}"
+                    >
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </form>
+            </div>
 
-        {% if scripts %}
-            {% for script in scripts %}
-                <div class="script-card">
-                    <h3 class="script-title">{{ script.title }}</h3>
-                    <div class="script-meta">
-                        <span>Created: {{ script.created_at|date:"F j, Y, g:i a" }}</span>
-                        {% if script.language %}
-                            <span> • Language: {{ script.get_language_display }}</span>
+            <!-- Scripts List -->
+            {% if scripts %}
+                <div class="space-y-6">
+                    {% for script in scripts %}
+                        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-medium text-gray-900">{{ script.title }}</h3>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                        {{ script.get_language_display }}
+                                    </span>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-500">
+                                    Created: {{ script.created_at|date:"F j, Y, g:i a" }}
+                                </div>
+                                <div class="mt-4 text-gray-700">
+                                    {{ script.content|truncatewords:50 }}
+                                </div>
+                                <div class="mt-4 flex flex-wrap gap-4">
+                                    <button 
+                                        onclick="exportScript('{{ script.id }}', 'txt')" 
+                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                                    >
+                                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Download as TXT
+                                    </button>
+                                    <button 
+                                        onclick="exportScript('{{ script.id }}', 'pdf')" 
+                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                                    >
+                                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Download as PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if scripts.paginator.num_pages > 1 %}
+                <nav class="mt-8 flex items-center justify-center">
+                    <div class="flex space-x-2">
+                        {% if scripts.has_previous %}
+                            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                               class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                First
+                            </a>
+                            <a href="?page={{ scripts.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                               class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                Previous
+                            </a>
+                        {% endif %}
+
+                        {% for num in scripts.paginator.page_range %}
+                            {% if num == scripts.number %}
+                                <span class="inline-flex items-center px-3 py-2 border border-orange-500 text-sm leading-4 font-medium rounded-md text-white bg-orange-500">
+                                    {{ num }}
+                                </span>
+                            {% elif num > scripts.number|add:'-3' and num < scripts.number|add:'3' %}
+                                <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                                   class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                    {{ num }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if scripts.has_next %}
+                            <a href="?page={{ scripts.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                               class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                Next
+                            </a>
+                            <a href="?page={{ scripts.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" 
+                               class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                Last
+                            </a>
                         {% endif %}
                     </div>
-                    <div class="script-content">
-                        {{ script.content|truncatewords:50 }}
-                    </div>
-                    <div class="export-options">
-                        <button onclick="exportScript('{{ script.id }}', 'txt')" class="export-btn">Download as TXT</button>
-                        <button onclick="exportScript('{{ script.id }}', 'pdf')" class="export-btn">Download as PDF</button>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No scripts found</h3>
+                    <p class="mt-1 text-sm text-gray-500">Get started by creating a new script.</p>
+                    <div class="mt-6">
+                        <a href="{% url 'home' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors">
+                            Create new script
+                        </a>
                     </div>
                 </div>
-            {% endfor %}
-
-            <div class="pagination">
-                {% if scripts.has_previous %}
-                    <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">&laquo; First</a>
-                    <a href="?page={{ scripts.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">Previous</a>
-                {% endif %}
-
-                {% for num in scripts.paginator.page_range %}
-                    {% if num == scripts.number %}
-                        <span class="page-link active">{{ num }}</span>
-                    {% elif num > scripts.number|add:'-3' and num < scripts.number|add:'3' %}
-                        <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">{{ num }}</a>
-                    {% endif %}
-                {% endfor %}
-
-                {% if scripts.has_next %}
-                    <a href="?page={{ scripts.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">Next</a>
-                    <a href="?page={{ scripts.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-link">Last &raquo;</a>
-                {% endif %}
-            </div>
-        {% else %}
-            <p class="text-center">No scripts found.</p>
-        {% endif %}
-    </div>
+            {% endif %}
+        </div>
+    </main>
 
     <script>
         function exportScript(scriptId, format) {
